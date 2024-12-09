@@ -90,9 +90,14 @@ class _QuotesScreenState extends State<QuotesScreen> {
     if (newCategory != null) {
       setState(() {
         selectedCategory = newCategory;
-        quotes = ApiService.fetchQuotes(selectedCategory);
       });
     }
+  }
+
+  void _fetchQuotes() {
+    setState(() {
+      quotes = ApiService.fetchQuotes(selectedCategory);
+    });
   }
 
   @override
@@ -103,16 +108,41 @@ class _QuotesScreenState extends State<QuotesScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: DropdownButton<String>(
-              value: selectedCategory,
-              onChanged: _onCategoryChanged,
-              items:
-                  categories.map<DropdownMenuItem<String>>((String category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Text(category),
-                );
-              }).toList(),
+            child: Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: selectedCategory,
+                    onChanged: _onCategoryChanged,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ), 
+                      labelText: 'Select Category',
+                    ),
+                    items: categories
+                        .map<DropdownMenuItem<String>>((String category) {
+                      return DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(width: 8),
+                SizedBox(
+                  height: 50.0,
+                  child: ElevatedButton(
+                    onPressed: _fetchQuotes,
+                    child: Text('See'),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -128,9 +158,28 @@ class _QuotesScreenState extends State<QuotesScreen> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final quote = snapshot.data![index];
-                      return ListTile(
-                        title: Text(quote.text),
-                        subtitle: Text('- ${quote.author}'),
+                      return Card(
+                        margin: EdgeInsets.all(8.0),
+                        color: Colors.blueAccent.shade100,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                quote.text,
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                '- ${quote.author}',
+                                style: TextStyle(
+                                    fontSize: 16, fontStyle: FontStyle.italic),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   );

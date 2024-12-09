@@ -10,8 +10,12 @@ class ApiService {
   static const jokesUrl = 'https://jokesbapak2.reinaldyrafli.com/api/';
 
   static Future<List<Quote>> fetchQuotes(String category) async {
-    final response =
-        await http.get(Uri.parse('$baseQuotesUrl$category&key=$_apiKey'));
+    final url = '$baseQuotesUrl$category';
+    print('Fetching quotes from: $url'); // Log the URL
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'X-Api-Key': _apiKey},
+    );
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
       return data.map((quote) => Quote.fromJson(quote)).toList();
